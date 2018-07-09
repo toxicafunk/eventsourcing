@@ -35,7 +35,7 @@ ui =
   render :: State -> H.ComponentHTML Query
   render st =
     HH.form_ $
-      [ HH.h1_ [ HH.text "Lookup GitHub user" ]
+      [ HH.h1_ [ HH.text "Lookup event id" ]
       , HH.label_
           [ HH.div_ [ HH.text "Enter eventId:" ]
           , HH.input
@@ -64,12 +64,11 @@ ui =
   eval :: Query ~> H.ComponentDSL State Query Void (Aff (ajax :: AX.AJAX | eff))
   eval = case _ of
     SetEventId eventId next -> do
-      H.modify (_ { eventId = username, result = Nothing :: Maybe String })
+      H.modify (_ { eventId = eventId, result = Nothing :: Maybe String })
       pure next
     MakeRequest next -> do
-      eventId <- H.gets _.username
+      eventId <- H.gets _.eventId
       H.modify (_ { loading = true })
-      ---response <- H.liftAff $ AX.get ("https://api.github.com/users/" <> eventId)
       response <- H.liftAff $ AX.get ("http://localhost:9090/events/" <> eventId)
       H.modify (_ { loading = false, result = Just response.response })
       pure next
